@@ -1,0 +1,238 @@
+/*
+ * build.gradle
+ * libraries
+ *
+ * Copyright (C) 2020, Gleb Nikitenko.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+buildscript {
+  repositories {
+    google(); jcenter(); mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+  }
+  dependencies {
+    classpath project.properties['com.android.tools.build_gradle']
+    classpath project.properties['com.getkeepsafe.dexcount_dexcount-gradle-plugin']
+    classpath project.properties['io.codearte.gradle.nexus_gradle-nexus-staging-plugin']
+  }
+}
+
+allprojects {
+  repositories {
+    google(); jcenter(); mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+    maven { url 'https://oss.sonatype.org/service/local/repositories/releases' }
+  }
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-Xlint:unchecked"
+    options.compilerArgs << "-Xdiags:verbose"
+  }
+  configurations.all {
+    resolutionStrategy {
+      force project.properties['androidx.annotation_annotation']
+      force project.properties['androidx.core_core']
+      force project.properties['androidx.fragment_fragment']
+      force project.properties['androidx.collection_collection']
+      force project.properties['com.google.android.gms_play-services-basement']
+      force project.properties['com.google.android.gms_play-services-tasks']
+      force project.properties['io.projectreactor_reactor-core']
+    }
+  }
+}
+
+subprojects {
+  final int supportLastYears = 2
+  project.ext.buildTools = System.getenv('ANDROID_BUILD_TOOLS_VERSION')
+  project.ext.targetSdk = Integer.parseInt(project.buildTools.substring(0, 2))
+  project.ext.minSdk = project.targetSdk - (supportLastYears * 2)
+  project.ext.groupId = 'com.github.nik-gleb'
+  project.ext.sonatypeUserName = System.getenv('SONATYPE_USERNAME')
+  project.ext.sonatypePassword = System.getenv('SONATYPE_PASSWORD')
+  project.ext.versionName = project.properties['project.version']
+  project.ext.isRelease = "master" == System.getProperty('git.branch')
+  project.ext.versionSuffix = project.isRelease ? "RELEASE" : "SNAPSHOT"
+  project.ext.fullVersion = project.versionName + "-" + project.versionSuffix
+  project.ext.sonatypeUrl = project.isRelease ?
+    'https://oss.sonatype.org/service/local/staging/deploy/maven2' :
+    'https://oss.sonatype.org/content/repositories/snapshots'
+
+  apply plugin: 'com.android.library'
+  apply plugin: 'com.getkeepsafe.dexcount'
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
+  apply plugin: 'io.codearte.nexus-staging'
+
+  android {
+
+    compileSdkVersion project.targetSdk
+    buildToolsVersion project.buildTools
+
+    defaultConfig {
+
+      minSdkVersion project.minSdk
+      targetSdkVersion project.targetSdk
+
+      versionCode 0
+      versionName project.versionName
+      versionNameSuffix project.versionSuffix
+      archivesBaseName = project.name
+
+      multiDexEnabled false
+
+      dexOptions {
+        javaMaxHeapSize "16G"
+        maxProcessCount 8
+        threadCount 8
+        keepRuntimeAnnotatedClasses false
+        dexInProcess = true
+        jumboMode = false
+        preDexLibraries true
+      }
+      compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        incremental true
+      }
+      resConfigs "en"
+      signingConfig signingConfigs.debug
+      consumerProguardFiles 'proguard-rules.pro', '../proguard-rules.pro'
+    }
+
+    buildTypes {
+      debug {
+        debuggable true; minifyEnabled false; shrinkResources false
+        proguardFiles 'proguard-rules.pro', '../proguard-rules.pro'
+      }
+      release {
+        debuggable false; minifyEnabled true; shrinkResources false
+        proguardFiles 'proguard-rules.pro', '../proguard-rules.pro'
+      }
+    }
+
+    sourceSets.main.setRoot(".")
+    sourceSets.main.manifest.srcFile "../AndroidManifest.xml"
+
+    lintOptions {
+      checkReleaseBuilds true
+      abortOnError true
+    }
+
+    aaptOptions.additionalParameters '--enable-sparse-encoding'
+  }
+
+  task fix_aapt_rules(type: Delete) {
+    delete file("$buildDir/intermediates/aapt_proguard_file/release/aapt_rules.txt")
+    delete file("$buildDir/intermediates/proguard-files/proguard-android-optimize.txt-3.6.1")
+    delete file("$buildDir/intermediates/proguard-files/proguard-android.txt-3.6.1")
+    delete file("$buildDir/intermediates/proguard-files/proguard-defaults.txt-3.6.1")
+  }
+  afterEvaluate {
+    mergeReleaseGeneratedProguardFiles.dependsOn project.tasks.getByName('fix_aapt_rules')
+    generateReleaseBuildConfig.enabled = false
+  }
+
+  task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = 'sources'
+  }
+  task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  }
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+  }
+  publishing.publications {
+    mavenJava(MavenPublication) {
+      groupId project.groupId
+      artifactId project.name
+      version project.fullVersion
+      artifact "$buildDir/intermediates/aar_main_jar/release/classes.jar"
+      artifact sourcesJar
+      artifact javadocJar
+
+
+      final File file = new File(project.name, "README.md")
+      final Scanner scanner = new Scanner(new FileInputStream(file))
+      final String title = scanner.nextLine().substring(2), summary = scanner.nextLine()
+      scanner.close()
+
+      pom {
+        name = title
+        description = summary
+        url = 'https://github.com/Nik-Gleb/libraries/tree/master/' + project.name
+        licenses {
+          license {
+            name = 'MIT License'
+            url = 'https://github.com/Nik-Gleb/libraries/blob/master/LICENSE'
+          }
+        }
+        developers {
+          developer {
+            id = 'Nik-Gleb'
+            name = 'Gleb Nikitenko'
+            email = 'nikitosgleb@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:git://git@github.com:Nik-Gleb/libraries.git'
+          developerConnection = 'scm:git:ssh://git@github.com:Nik-Gleb/libraries.git'
+          url = 'https://github.com/Nik-Gleb/libraries/tree/master/' + project.name
+        }
+        withXml {
+          def node = asNode().appendNode('dependencies')
+          configurations.implementation.allDependencies.each { dep ->
+            def depNode = node.appendNode('dependency')
+            boolean isModule = dep.group == project.rootProject.name
+            depNode.appendNode('groupId', isModule ? project.groupId : dep.group)
+            depNode.appendNode('artifactId', dep.name)
+            depNode.appendNode('version', isModule ? project.fullVersion : dep.version)
+            depNode.appendNode('scope', 'compile')
+          }
+        }
+      }
+    }
+  }
+
+  publishing.repositories {
+    maven {
+      url project.sonatypeUrl
+      credentials.username project.sonatypeUserName
+      credentials.password project.sonatypePassword
+    }
+  }
+  nexusStaging {
+    username project.sonatypeUserName
+    password project.sonatypePassword
+    packageGroup project.groupId
+    stagingProfileId 'a83cc5b4fd3bad'
+    numberOfRetries 48
+    delayBetweenRetriesInMillis 5000
+    repositoryDescription "v" + project.versionName + " released"
+  }
+  signing.sign publishing.publications
+  tasks.whenTaskAdded { task -> if (task.name == 'assembleRelease') publish.dependsOn task }
+}
