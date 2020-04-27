@@ -40,9 +40,6 @@ allprojects {
     google(); jcenter(); mavenCentral()
     maven { url 'https://plugins.gradle.org/m2/' }
     maven { url 'https://jitpack.io' }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-    maven { url 'https://oss.sonatype.org/service/local/repositories/releases' }
   }
   tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:deprecation"
@@ -58,6 +55,9 @@ allprojects {
       force project.properties['com.google.android.gms_play-services-basement']
       force project.properties['com.google.android.gms_play-services-tasks']
       force project.properties['io.projectreactor_reactor-core']
+      force project.properties['com.squareup.okhttp3_okhttp']
+      force project.properties['com.squareup.okio_okio']
+      force project.properties['com.headius_unsafe-mock']
     }
   }
 }

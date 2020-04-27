@@ -1,5 +1,5 @@
 /*
- * build.gradle
+ * PublisherUtils.java
  * internals
  *
  * Copyright (C) 2020, Gleb Nikitenko.
@@ -22,10 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-dependencies {
-  implementation project.properties['com.google.android.gms_play-services-tasks']
-  implementation project.properties['com.squareup.okhttp3_okhttp']
-  implementation project.properties['com.squareup.okio_okio']
-  implementation project.properties['io.projectreactor_reactor-core']
-  implementation project.properties['com.headius_unsafe-mock']
+
+package reactor.core.publisher;
+
+import java.util.concurrent.CompletableFuture;
+
+import reactor.core.CoreSubscriber;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
+
+/**
+ * @author Gleb Nikitenko
+ * @since 28.04.20
+ **/
+@SuppressWarnings({
+  "unused",
+  "WeakerAccess",
+  "RedundantSuppression"
+})
+public final class PublisherUtils {
+
+  /**
+   * The caller should be prevented from constructing objects of this class.
+   * Also, this prevents even the native class from calling this constructor.
+   **/
+  private PublisherUtils() {
+    throw new AssertionError();
+  }
+
+  public static <T> Tuple2<CompletableFuture<T>, CoreSubscriber<T>> monoFuture() {
+    final MonoToCompletableFuture<T> result = new MonoToCompletableFuture<>();
+    return Tuples.of(result, result);
+  }
 }

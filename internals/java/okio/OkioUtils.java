@@ -1,5 +1,5 @@
 /*
- * build.gradle
+ * OkioUtils.java
  * internals
  *
  * Copyright (C) 2020, Gleb Nikitenko.
@@ -22,10 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-dependencies {
-  implementation project.properties['com.google.android.gms_play-services-tasks']
-  implementation project.properties['com.squareup.okhttp3_okhttp']
-  implementation project.properties['com.squareup.okio_okio']
-  implementation project.properties['io.projectreactor_reactor-core']
-  implementation project.properties['com.headius_unsafe-mock']
+
+package okio;
+
+/**
+ * @author Gleb Nikitenko
+ * @since 28.04.20
+ **/
+public final class OkioUtils {
+
+  /**
+   * The caller should be prevented from constructing objects of this class.
+   * Also, this prevents even the native class from calling this constructor.
+   **/
+  private OkioUtils() {
+    throw new AssertionError();
+  }
+
+  /**
+   * @param value byte string
+   * @return byte array
+   */
+  public static byte[] bytes(ByteString value) {
+    return value.data;
+  }
+
 }

@@ -1,6 +1,6 @@
 #
 # proguard-rules.pro
-# mylibrary
+# internals
 #
 # Copyright (C) 2020, Gleb Nikitenko.
 #
@@ -23,3 +23,14 @@
 # SOFTWARE.
 #
 -keep public class com.google.android.gms.tasks.TasksUtils {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Frame {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Text {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Binary {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Ping {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Pong {public protected *;}
+-keep public class okhttp3.internal.ws.WSUtils$Close {public protected *;}
+-keep public interface okhttp3.internal.ws.WSUtils$IORunnable {public protected *;}
+-keep public class okhttp3.OkHttpUtils {public protected *;}
+-keep public class okio.OkioUtils {public protected *;}
+-keep public class reactor.core.publisher.PublisherUtils {public protected *;}

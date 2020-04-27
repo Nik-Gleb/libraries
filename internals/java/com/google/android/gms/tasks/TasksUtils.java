@@ -25,8 +25,6 @@
 
 package com.google.android.gms.tasks;
 
-import androidx.annotation.NonNull;
-
 @SuppressWarnings({
   "unused",
   "WeakerAccess",
@@ -46,7 +44,7 @@ public final class TasksUtils {
    * @param task google task
    * @return result of cancellation
    */
-  public static boolean cancel(@NonNull Task task) {
+  public static boolean cancel(Task task) {
     return ((zzu) task).zza();
   }
 }
