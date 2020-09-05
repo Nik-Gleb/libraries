@@ -1,6 +1,6 @@
 /*
  * build.gradle
- * libraries
+ * executors
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -80,7 +80,7 @@ subprojects {
     'https://oss.sonatype.org/content/repositories/snapshots'
 
   apply plugin: 'com.android.library'
-  apply plugin: 'com.getkeepsafe.dexcount'
+  //apply plugin: 'com.getkeepsafe.dexcount'
   apply plugin: 'maven-publish'
   apply plugin: 'signing'
   apply plugin: 'io.codearte.nexus-staging'
