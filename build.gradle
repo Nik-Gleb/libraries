@@ -51,6 +51,7 @@ allprojects {
       force project.properties['androidx.annotation_annotation']
       force project.properties['androidx.core_core']
       force project.properties['androidx.fragment_fragment']
+      force project.properties['androidx.appcompat_appcompat']
       force project.properties['androidx.collection_collection']
       force project.properties['com.google.android.gms_play-services-basement']
       force project.properties['com.google.android.gms_play-services-tasks']

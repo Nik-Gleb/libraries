@@ -31,42 +31,43 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import okhttp3.MultipartBody.Part;
+import okhttp3.internal.Util;
 import okio.ByteString;
 
-import static okhttp3.Protocol.HTTP_1_1;
-import static okhttp3.Protocol.HTTP_2;
-import static okhttp3.internal.Util.immutableList;
 
 /**
+ * OkHttp Internal Utils.
+ *
  * @author Gleb Nikitenko
  * @since 28.04.20
  **/
-@SuppressWarnings({
-  "unused",
-  "WeakerAccess",
-  "RedundantSuppression"
-})
+@SuppressWarnings({ "unused", "WeakerAccess", "RedundantSuppression" })
 public final class OkHttpUtils {
+
   /**
    * The caller should be prevented from constructing objects of this class.
    * Also, this prevents even the native class from calling this constructor.
    **/
-  private OkHttpUtils() {
-    throw new AssertionError();
-  }
+  private OkHttpUtils() {throw new AssertionError();}
 
   /**
    * @param client okHttp client
    * @param check  wss checker
+   *
    * @return call factory
    */
-  public static Call.Factory factory(OkHttpClient.Builder client, Predicate<HttpUrl> check) {
+  public static Call.Factory factory(OkHttpClient.Builder client,
+                                     Predicate<HttpUrl> check) {
+    final List<Protocol>
+      restProtocols = Util.immutableList(Protocol.HTTP_2, Protocol.HTTP_1_1),
+      wssProtocols = Util.immutableList(Protocol.HTTP_1_1);
     final OkHttpClient
-      rest = client.protocols(immutableList(HTTP_2, HTTP_1_1)).build(),
-      wss = client.protocols(immutableList(HTTP_1_1)).build();
+      rest = client.protocols(restProtocols).build(),
+      wss = client.protocols(wssProtocols).build();
     return request -> {
       final boolean isWebSocket = check.test(request.url);
-      return RealCall.newRealCall(isWebSocket ? wss : rest, request, isWebSocket);
+      final OkHttpClient okHttp = isWebSocket ? wss : rest;
+      return RealCall.newRealCall(okHttp, request, isWebSocket);
     };
   }
 
@@ -74,9 +75,12 @@ public final class OkHttpUtils {
    * @param boundary multipart boundary
    * @param type     content type
    * @param parts    body parts
+   *
    * @return request body
    */
-  public static RequestBody multipart(ByteString boundary, MediaType type, Part... parts) {
+  public static RequestBody multipart(ByteString boundary,
+                                      MediaType type,
+                                      Part... parts) {
     return new MultipartBody(boundary, type, Arrays.asList(parts));
   }
 
@@ -94,10 +98,12 @@ public final class OkHttpUtils {
    * @param limit       size of input
    * @param set         encode set
    * @param encoded     true to leave '%' as-is; false to convert it to '%25'.
-   * @param strict      true to encode '%' if it is not the prefix of a valid percent encoding.
+   * @param strict      true to encode '%' if it is not the prefix of a valid
+   *                    percent encoding.
    * @param plusIsSpace true to encode '+' as "%2B" if it is not already encoded.
    * @param asciiOnly   true to encode all non-ASCII codePoints.
    * @param charset     which charset to use, null equals UTF-8.
+   *
    * @return substring of {@code input} on the range {@code [pos..limit)}
    * with the following transformations:
    * <ul>
@@ -108,8 +114,11 @@ public final class OkHttpUtils {
    *   <li>All other characters are copied without transformation.
    * </ul>
    */
-  public static String canonicalize(String input, int pos, int limit, String set, boolean encoded,
-                                    boolean strict, boolean plusIsSpace, boolean asciiOnly, Charset charset) {
-    return HttpUrl.canonicalize(input, pos, limit, set, encoded, strict, plusIsSpace, asciiOnly, charset);
+  public static String canonicalize(String input, int pos, int limit, String set,
+                                    boolean encoded, boolean strict,
+                                    boolean plusIsSpace, boolean asciiOnly,
+                                    Charset charset) {
+    return HttpUrl.canonicalize(input, pos, limit, set, encoded, strict,
+      plusIsSpace, asciiOnly, charset);
   }
 }

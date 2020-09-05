@@ -1,6 +1,6 @@
 /*
- * OkioUtils.java
- * internals
+ * build.gradle
+ * fragments
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -22,27 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-package okio;
-
-/**
- * @author Gleb Nikitenko
- * @since 28.04.20
- **/
-@SuppressWarnings({ "unused", "WeakerAccess", "RedundantSuppression" })
-public final class OkioUtils {
-
-  /**
-   * The caller should be prevented from constructing objects of this class.
-   * Also, this prevents even the native class from calling this constructor.
-   **/
-  private OkioUtils() {throw new AssertionError();}
-
-  /**
-   * @param value byte string
-   *
-   * @return byte array
-   */
-  public static byte[] bytes(ByteString value) {return value.data;}
-
+dependencies {
+  implementation project.properties['androidx.fragment_fragment']
+  implementation project.properties['androidx.appcompat_appcompat']
+  implementation "androidx.transition:transition:1.3.1"
 }

@@ -25,3 +25,5 @@
 
 rootProject.name = 'libraries'
 include ':internals'
+include ':executors'
+include ':fragments'

@@ -10,6 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/executors" />
+            <option value="$PROJECT_DIR$/fragments" />
             <option value="$PROJECT_DIR$/internals" />
           </set>
         </option>

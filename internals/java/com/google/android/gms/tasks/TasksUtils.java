@@ -25,26 +25,26 @@
 
 package com.google.android.gms.tasks;
 
-@SuppressWarnings({
-  "unused",
-  "WeakerAccess",
-  "RedundantSuppression"
-})
+/**
+ * Tasks Internal Utils.
+ *
+ * @author Gleb Nikitenko
+ * @since 28.04.20
+ **/
+@SuppressWarnings({ "unused", "WeakerAccess", "RedundantSuppression" })
 public final class TasksUtils {
 
   /**
    * The caller should be prevented from constructing objects of this class.
    * Also, this prevents even the native class from calling this constructor.
    **/
-  private TasksUtils() {
-    throw new AssertionError();
-  }
+  private TasksUtils() {throw new AssertionError();}
 
   /**
    * @param task google task
+   *
    * @return result of cancellation
    */
-  public static boolean cancel(Task task) {
-    return ((zzu) task).zza();
-  }
+  @SuppressWarnings("rawtypes")
+  public static boolean cancel(Task task) {return ((zzu) task).zza();}
 }

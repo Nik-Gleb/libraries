@@ -1,6 +1,6 @@
 #
-# gradle-wrapper.properties
-# libraries
+# proguard-rules.pro
+# executors
 #
 # Copyright (C) 2020, Gleb Nikitenko.
 #
@@ -22,8 +22,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-6.6-all.zip
+-keep public class ru.nikitenkogleb.executors.AndroidThread {public protected *;}
