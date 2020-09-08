@@ -172,8 +172,8 @@ subprojects {
       artifactId project.name
       version project.fullVersion
       artifact "$buildDir/intermediates/aar_main_jar/release/classes.jar"
-      //artifact sourcesJar
-      //artifact javadocJar
+      artifact sourcesJar
+      artifact javadocJar
 
 
       final File file = new File(project.name, "README.md")
