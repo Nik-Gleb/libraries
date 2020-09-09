@@ -161,6 +161,11 @@ subprojects {
   task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    excludes += [
+        "**/okio/**",
+        "**/okhttp3/**",
+        "**/com.google.android.gms.tasks/**"
+    ]
   }
   task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
