@@ -164,7 +164,7 @@ subprojects {
     excludes += [
         "**/okio/**",
         "**/okhttp3/**",
-        "**/com.google.android.gms.tasks/**"
+        "**/com/google/android/gms/tasks/**"
     ]
   }
   task javadocJar(type: Jar, dependsOn: javadoc) {
