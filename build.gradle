@@ -180,7 +180,7 @@ subprojects {
       artifact sourcesJar
       artifact javadocJar
 
-      final File file = new File("$buildDir/..", "README.md")
+      final File file = new File(project.name, "README.md")
       final Scanner scanner = new Scanner(new FileInputStream(file))
       final String title = scanner.nextLine().substring(2), summary = scanner.nextLine()
       scanner.close()
