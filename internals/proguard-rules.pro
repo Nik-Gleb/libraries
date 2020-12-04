@@ -22,6 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+#noinspection ShrinkerUnresolvedReference
 -keep public class com.google.android.gms.tasks.TasksUtils {public protected *;}
 -keep public class okhttp3.internal.ws.WSUtils {public protected *;}
 -keep public class okhttp3.internal.ws.WSUtils$Frame {public protected *;}

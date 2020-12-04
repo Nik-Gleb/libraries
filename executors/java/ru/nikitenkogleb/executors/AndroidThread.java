@@ -1,6 +1,6 @@
 /*
  * AndroidThread.java
- * executors
+ * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -49,48 +49,48 @@ final class AndroidThread extends Thread {
   private volatile Runnable mHook = null;
 
   /** {@inheritDoc} */
-  public AndroidThread(int priority) {
+  private AndroidThread(int priority) {
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(Runnable runnable, int priority) {
+  private AndroidThread(Runnable runnable, int priority) {
     super(runnable);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(ThreadGroup group, Runnable runnable, int priority) {
+  private AndroidThread(ThreadGroup group, Runnable runnable, int priority) {
     super(group, runnable);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(String name, int priority) {
+  private AndroidThread(String name, int priority) {
     super(name);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(ThreadGroup group, String name, int priority) {
+  private AndroidThread(ThreadGroup group, String name, int priority) {
     super(group, name);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(Runnable runnable, String name, int priority) {
+  private AndroidThread(Runnable runnable, String name, int priority) {
     super(runnable, name);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(ThreadGroup group, Runnable runnable, String name, int priority) {
+  private AndroidThread(ThreadGroup group, Runnable runnable, String name, int priority) {
     super(group, runnable, name);
     mPriority = priority;
   }
 
   /** {@inheritDoc} */
-  public AndroidThread(ThreadGroup group, Runnable runnable, String name, long stack,
+  private AndroidThread(ThreadGroup group, Runnable runnable, String name, long stack,
                        int priority) {
     super(group, runnable, name, stack);
     mPriority = priority;
@@ -128,6 +128,7 @@ final class AndroidThread extends Thread {
    * @param name    thread-name prefix
    * @param thread  java-thread priority
    * @param process android-process priority
+   * @param multi   multi-naming
    *
    * @return thread factory
    */

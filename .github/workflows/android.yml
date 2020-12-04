@@ -49,3 +49,4 @@ jobs:
           SONATYPE_GPG_PASSWORD: ${{secrets.SONATYPE_GPG_PASSWORD}}
         run: |
           ./build.sh internals
+          ./build.sh executors

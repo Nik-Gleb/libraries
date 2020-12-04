@@ -28,7 +28,6 @@
 #-dontshrink
 
 -verbose
--android
 -optimizationpasses 5
 -allowaccessmodification
 -dontpreverify
@@ -57,22 +56,22 @@
 -dontnote org.apache.client.conn.*
 -dontnote org.apache.client.conn.scheme.*
 
--dontnote com.google.android.gms.common.api.internal.BasePendingResult$ReleasableResultGuardian
+-dontnote com.google.android.gms.common.api.internal.BasePendingResult.ReleasableResultGuardian
 -dontnote android.support.annotation.Keep
 -dontnote android.support.v4.media.ParceledListSliceAdapterApi21
--dontnote androidx.multidex.MultiDex$V14
+-dontnote androidx.multidex.MultiDex.V14
 -dontnote androidx.appcompat.app.ResourcesFlusher
 -dontnote androidx.appcompat.widget.DrawableUtils
 -dontnote androidx.client.graphics.TypefaceCompatApi24Impl
 -dontnote androidx.client.graphics.TypefaceCompatApi26Impl
 -dontnote androidx.client.text.ICUCompat
--dontnote androidx.client.widget.TextViewCompat$OreoCallback
+-dontnote androidx.client.widget.TextViewCompat.OreoCallback
 -dontnote androidx.transition.GhostViewApi21
 -dontnote androidx.client.graphics.TypefaceCompatApi26Impl
 -dontnote com.google.android.gms.common.util.WorkSourceUtil
 -dontnote com.google.android.gms.internal.measurement.*
 -dontnote com.google.android.gms.measurement.internal.*
--dontnote com.google.firebase.iid.FirebaseInstanceId$zza
+-dontnote com.google.firebase.iid.FirebaseInstanceId.zza
 -dontnote androidx.appcompat.widget.ViewUtils
 -dontnote androidx.client.app.NotificationManagerCompat
 -dontnote androidx.client.view.KeyEventDispatcher
@@ -80,7 +79,7 @@
 -dontnote com.google.android.gms.common.api.internal.**
 -dontnote androidx.media.AudioAttributesImplApi21Parcelizer
 -dontnote androidx.media.AudioAttributesImplBaseParcelizer
--dontnote androidx.vectordrawable.graphics.drawable.VectorDrawableCompat$VPath
+-dontnote androidx.vectordrawable.graphics.drawable.VectorDrawableCompat.VPath
 -dontnote com.google.android.gms.common.api.internal.LifecycleCallback
 -dontnote com.google.firebase.iid.FirebaseInstanceId
 

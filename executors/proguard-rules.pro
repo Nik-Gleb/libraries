@@ -22,4 +22,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
--keep public class ru.nikitenkogleb.executors.AndroidThread {public protected *;}
+#noinspection ShrinkerUnresolvedReference
+-keep public class ru.nikitenkogleb.executors.ExecutorServices {public protected *;}

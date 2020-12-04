@@ -1,6 +1,6 @@
 /*
  * ExtendedFragment.java
- * fragments
+ * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -37,6 +37,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -67,7 +70,6 @@ import static androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE;
 import static androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
 import static java.util.Objects.deepEquals;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 
 /**
@@ -230,20 +232,23 @@ public class ExtendedFragment extends ExtendedDialogFragment {
    *
    * @param fragments fragment manager
    * @param factory   fragment factory
-   * @param name      fragment name
+   * @param clazz     fragment class
    * @param args      fragment arguments
    */
   public static void open(@NonNull FragmentManager fragments,
-                          @NonNull Supplier<ExtendedFragment> factory,
-                          @NonNull String name, @NonNull Bundle args,
+                          @NonNull Supplier<? extends Fragment> factory,
+                          @NonNull Class<? extends Fragment> clazz,
+                          @NonNull Bundle args,
                           @Nullable String... sharedViewsNames) {
-    final ExtendedFragment[]
+    final String name = clazz.getSimpleName();
+
+    final Fragment[]
       stack = getStack(fragments)
-      .map(ExtendedFragment.class::cast)
-      .toArray(ExtendedFragment[]::new);
+      .map(Fragment.class::cast)
+      .toArray(Fragment[]::new);
 
     final boolean addToStack = stack.length > 0;
-    final ExtendedFragment fragment =
+    final Fragment fragment =
       Stream.of(stack)
         .filter(v -> Objects.equals(name, v.getTag()))
         .findFirst().orElseGet(factory);
@@ -259,8 +264,8 @@ public class ExtendedFragment extends ExtendedDialogFragment {
   /** {@inheritDoc} */
   @Override public final void setArguments(@Nullable Bundle args) {
     super.setArguments(args);
-    ofNullable(getView())
-      .ifPresent(it -> it.setTag(args));
+    final View view = getView();
+    if (view != null) view.setTag(args);
   }
 
   /** {@inheritDoc} */
@@ -271,38 +276,26 @@ public class ExtendedFragment extends ExtendedDialogFragment {
       DefaultAnimations.animation(transition, enter, next, defTransitionDur);
   }
 
+  /**
+   * @param transition transition index
+   * @param enter      enter or exit
+   * @param next       next transition
+   *
+   * @return new created animation
+   */
+  @Nullable public static Animation animation(int transition, boolean enter, int next)
+  { return DefaultAnimations.animation(transition, enter, next, DEFAULT_TRANSITION_DURATION); }
+
   /** {@inheritDoc} */
   @Nullable
   @Override
   public final View onCreateView(@NonNull LayoutInflater inflater,
                                  @Nullable ViewGroup container,
                                  @Nullable Bundle state) {
-    return fixInsets(content != 0 ? inflate(inflater, container) :
+    return content != 0 ? inflate(inflater, container, state) :
       getDialog() != null && getDialog().getWindow() != null ?
         getDialog().getWindow().getDecorView() :
-        super.onCreateView(inflater, container, state), this);
-  }
-
-  /**
-   * @param view     root view
-   * @param fragment fragment
-   *
-   * @return view
-   */
-  private static View fixInsets(@Nullable View view, @NonNull Fragment fragment) {
-    if (view != null) {
-      view.setTag(fragment.getArguments());
-      view.addOnAttachStateChangeListener(
-        new View.OnAttachStateChangeListener() {
-          @Override
-          public final void onViewAttachedToWindow(View v) {
-            view.removeOnAttachStateChangeListener(this); v.requestApplyInsets();
-          }
-
-          @Override public final void onViewDetachedFromWindow(View v) {}
-        });
-    }
-    return view;
+        super.onCreateView(inflater, container, state);
   }
 
   /**
@@ -312,58 +305,81 @@ public class ExtendedFragment extends ExtendedDialogFragment {
    * @return inflated or retained root view
    */
   @NonNull private View inflate(@NonNull LayoutInflater inflater,
-                                @Nullable ViewGroup container) {
-    if (mRootView == null) mRootView = inflater.inflate(content, container, ATTACH);
-    try {return mRootView;} finally {if (!retainable) mRootView = null;}
+                                @Nullable ViewGroup container,
+                                @Nullable Bundle state) {
+    if (mRootView == null) {
+      mRootView = inflater.inflate(content, container, ATTACH);
+      if (state == null) mRootView.setTag(super.getArguments());
+    } try {return mRootView;} finally {if (!retainable) mRootView = null;}
   }
 
   /** {@inheritDoc} */
-  @Override public void onDestroy() { mRootView = null; super.onDestroy();}
+  @Override public void onDestroy() {
+    if (mRootView != null) {
+      if (mRootView instanceof Closeable)
+        try {((Closeable) mRootView).close();}
+        catch (IOException e) {throw new UncheckedIOException(e);}
+      mRootView = null;
+    }
+    super.onDestroy();
+  }
 
   /** Show screen */
   private static void show(@NonNull FragmentManager manager,
-                           @NonNull ExtendedFragment fragment,
+                           @NonNull Fragment fragment,
                            @NonNull String name, boolean replace,
                            @Nullable String... sharedViewsNames) {
-    final FragmentTransaction transaction =
-      new ExtendedFragmentTransaction(manager)
-        .setTransition(replace ? TRANSIT_FRAGMENT_FADE : TRANSIT_FRAGMENT_OPEN);
-    if (replace) transaction.setReorderingAllowed(true);
-    final Bundle args = fragment.getArguments();
-    final boolean inflate = fragment.container != 0;
-    if (!replace) {
-      if (!inflate) transaction.add(fragment, name);
-      else transaction.replace(fragment.container, fragment, name);
-      transaction.addToBackStack(null);
+    if (!(fragment instanceof ExtendedFragment)) {
+      final FragmentTransaction transaction = manager.beginTransaction();
+      if (replace) transaction.setReorderingAllowed(true);
+      else transaction.addToBackStack(null);
+      transaction
+        .setTransition(replace ? TRANSIT_FRAGMENT_FADE : TRANSIT_FRAGMENT_OPEN)
+        .replace(android.R.id.content, fragment, name)
+        .commit();
+    } else {
+      final ExtendedFragment extended = (ExtendedFragment) fragment;
+      if (extended.content == 0) return;
+      final FragmentTransaction transaction =
+        new ExtendedFragmentTransaction(manager)
+          .setTransition(replace ? TRANSIT_FRAGMENT_FADE : TRANSIT_FRAGMENT_OPEN);
+      if (replace) transaction.setReorderingAllowed(true);
+      final boolean inflate = extended.container != 0;
+      if (!replace) {
+        if (!inflate) transaction.add(extended, name);
+        else transaction.replace(extended.container, extended, name);
+        transaction.addToBackStack(null);
+      }
+      else transaction.replace(extended.container, extended, name);
+      if (extended.title != 0) transaction.setBreadCrumbShortTitle(extended.title);
+      if (extended.subtitle != 0) transaction.setBreadCrumbTitle(extended.subtitle);
+      if (replace) transaction.setPrimaryNavigationFragment(extended);
+
+      Transition transition; addSharedElements(transaction, sharedViewsNames);
+      final Context context = ExtendedDialogFragment.context(manager);
+      final TransitionInflater inflater = TransitionInflater.from(context);
+
+      if (extended.sharedEnterTransition != 0) extended.setSharedElementEnterTransition
+        (inflater.inflateTransition(extended.sharedEnterTransition));
+
+      if (extended.sharedReturnTransition != 0) extended.setSharedElementReturnTransition
+        (inflater.inflateTransition(extended.sharedReturnTransition));
+
+      if (extended.enterTransition != 0) extended.setEnterTransition
+        (inflater.inflateTransition(extended.enterTransition));
+
+      if (extended.exitTransition != 0) extended.setExitTransition
+        (inflater.inflateTransition(extended.exitTransition));
+
+      if (extended.returnTransition != 0) extended.setReturnTransition
+        (inflater.inflateTransition(extended.returnTransition));
+
+      if (extended.reenterTransition != 0) extended.setReenterTransition
+        (inflater.inflateTransition(extended.reenterTransition));
+
+      transaction.commit();
+
     }
-    else transaction.replace(fragment.container, fragment, name);
-    if (fragment.title != 0) transaction.setBreadCrumbShortTitle(fragment.title);
-    if (fragment.subtitle != 0) transaction.setBreadCrumbTitle(fragment.subtitle);
-    if (replace) transaction.setPrimaryNavigationFragment(fragment);
-
-    Transition transition; addSharedElements(transaction, sharedViewsNames);
-    final Context context = ExtendedDialogFragment.context(manager);
-    final TransitionInflater inflater = TransitionInflater.from(context);
-
-    if (fragment.sharedEnterTransition != 0) fragment.setSharedElementEnterTransition
-      (inflater.inflateTransition(fragment.sharedEnterTransition));
-
-    if (fragment.sharedReturnTransition != 0) fragment.setSharedElementReturnTransition
-      (inflater.inflateTransition(fragment.sharedReturnTransition));
-
-    if (fragment.enterTransition != 0) fragment.setEnterTransition
-      (inflater.inflateTransition(fragment.enterTransition));
-
-    if (fragment.exitTransition != 0) fragment.setExitTransition
-      (inflater.inflateTransition(fragment.exitTransition));
-
-    if (fragment.returnTransition != 0) fragment.setReturnTransition
-      (inflater.inflateTransition(fragment.returnTransition));
-
-    if (fragment.reenterTransition != 0) fragment.setReenterTransition
-      (inflater.inflateTransition(fragment.reenterTransition));
-
-    transaction.commit();
   }
 
   /**

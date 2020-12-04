@@ -1,6 +1,6 @@
 /*
  * ExtendedFragmentTransaction.java
- * fragments
+ * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -560,7 +560,18 @@ public final class ExtendedFragmentTransaction extends FragmentTransaction {
    *
    * @return index in stack
    */
-  public static int getStack(ExtendedDialogFragment fragment) {return fragment.mBackStackId;}
+  public static int getStack2(ExtendedDialogFragment fragment) {return fragment.mBackStackId;}
+
+  /**
+   * @param fragment test fragment
+   *
+   * @return index in stack
+   */
+  public static int getStack(@NonNull Fragment fragment) {
+    return fragment instanceof ExtendedDialogFragment ?
+      ((ExtendedDialogFragment)fragment).mBackStackId :
+      fragment.mBackStackNesting - 1;
+  }
 
   /**
    * @param transaction      fragment transaction
@@ -594,4 +605,13 @@ public final class ExtendedFragmentTransaction extends FragmentTransaction {
     mFragmentTransaction.mSharedElementSourceNames.add(value);
     mFragmentTransaction.mSharedElementTargetNames.add(value);
   }
+
+  /**
+   * @param activity fragment activity
+   *
+   * @return fragment controller
+   */
+  @NonNull public static FragmentController
+  controller(@NonNull FragmentActivity activity)
+  {return activity.mFragments;}
 }

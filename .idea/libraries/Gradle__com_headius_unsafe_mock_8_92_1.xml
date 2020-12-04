@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: com.headius:unsafe-mock:8.92.1@jar">
+  <library name="Gradle: com.headius:unsafe-mock:8.92.1">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.headius/unsafe-mock/8.92.1/dbd89bb23aa64630eaa6244c9ece4a7c86889616/unsafe-mock-8.92.1.jar!/" />
     </CLASSES>
