@@ -22,5 +22,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#noinspection ShrinkerUnresolvedReference
+
 -keep public class ru.nikitenkogleb.executors.ExecutorServices {public protected *;}
