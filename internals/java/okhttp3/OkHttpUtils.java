@@ -1,6 +1,6 @@
 /*
  * OkHttpUtils.java
- * internals
+ * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -33,7 +33,6 @@ import java.util.function.Predicate;
 import okhttp3.MultipartBody.Part;
 import okhttp3.internal.Util;
 import okio.ByteString;
-
 
 /**
  * OkHttp Internal Utils.

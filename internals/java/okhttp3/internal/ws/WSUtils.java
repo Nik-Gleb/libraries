@@ -1,6 +1,6 @@
 /*
  * WSUtils.java
- * internals
+ * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
  *
@@ -37,7 +37,6 @@ import okio.BufferedSource;
 import okio.ByteString;
 import okio.OkioUtils;
 import okio.Sink;
-
 
 /**
  * @author Gleb Nikitenko

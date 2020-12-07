@@ -1,6 +1,6 @@
 #
 # proguard-rules.pro
-# libraries
+# recycler
 #
 # Copyright (C) 2020, Gleb Nikitenko.
 #
@@ -23,37 +23,6 @@
 # SOFTWARE.
 #
 
-#-dontobfuscate
-#-dontoptimize
-#-dontshrink
-
-#-verbose
--android
--optimizationpasses 5
--allowaccessmodification
--dontpreverify
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--dontskipnonpubliclibraryclassmembers
-
-#-printmapping 'mapping.txt'
-#-printconfiguration 'configuration.txt'
-
-#-optimizations !codeView/simplification/arithmetic
-#-optimizations !codeView/simplification/cast
-#-optimizations !code/allocation/variable
-#-optimizations !field
-
--keepparameternames
-#-renamesourcefileattribute SourceFile
--keepattributes *Annotation*, Signature
--keepattributes EnclosingMethod
-#-keepattributes LineNumberTable, SourceFile
--keepattributes InnerClasses, Exceptions
-
--dontnote java.lang.invoke.CallSite
--dontnote java.lang.invoke.LambdaConversionException
--dontnote java.lang.invoke.MethodHandle
--dontnote java.lang.invoke.MethodHandles$Lookup
--dontnote java.lang.invoke.MethodHandles
--dontnote java.lang.invoke.MethodType
+#noinspection ShrinkerUnresolvedReference
+-keep public class ru.nikitenkogleb.recycler.RecyclerViewAdapter {public protected *;}
+-keep public class ru.nikitenkogleb.recycler.CollectionView {public protected *;}

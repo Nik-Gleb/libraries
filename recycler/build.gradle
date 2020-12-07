@@ -1,5 +1,5 @@
 /*
- * settings.gradle
+ * build.gradle
  * libraries
  *
  * Copyright (C) 2020, Gleb Nikitenko.
@@ -22,9 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-rootProject.name = 'libraries'
-include ':internals'
-include ':executors'
-include ':recycler'
-//include ':fragments'
+dependencies {
+  implementation project.properties['androidx.annotation_annotation']
+  implementation project.properties['androidx.recyclerview_recyclerview']
+}

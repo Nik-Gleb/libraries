@@ -50,3 +50,4 @@ jobs:
         run: |
           ./build.sh internals
           ./build.sh executors
+          ./build.sh recycler

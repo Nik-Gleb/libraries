@@ -23,6 +23,7 @@
 # SOFTWARE.
 #
 #noinspection ShrinkerUnresolvedReference
+-dontnote android.support.annotation.Keep
 -keep public class com.google.android.gms.tasks.TasksUtils {public protected *;}
 -keep public class okhttp3.internal.ws.WSUtils {public protected *;}
 -keep public class okhttp3.internal.ws.WSUtils$Frame {public protected *;}
@@ -34,4 +35,3 @@
 -keep public interface okhttp3.internal.ws.WSUtils$IORunnable {public protected *;}
 -keep public class okhttp3.OkHttpUtils {public protected *;}
 -keep public class okio.OkioUtils {public protected *;}
--keep public class reactor.core.publisher.PublisherUtils {public protected *;}
