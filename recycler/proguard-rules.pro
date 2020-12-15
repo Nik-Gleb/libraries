@@ -25,4 +25,5 @@
 
 #noinspection ShrinkerUnresolvedReference
 -keep public class ru.nikitenkogleb.recycler.RecyclerViewAdapter {public protected *;}
+-keep public interface ru.nikitenkogleb.recycler.RecyclerViewAdapter$Diffs {public protected *;}
 -keep public class ru.nikitenkogleb.recycler.CollectionView {public protected *;}
