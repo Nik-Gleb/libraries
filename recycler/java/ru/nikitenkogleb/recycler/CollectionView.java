@@ -62,15 +62,15 @@ public final class CollectionView extends RecyclerView {
   private RecyclerViewAdapter mAdapter = null;
 
   /** {@inheritDoc} */
-  public CollectionView(@androidx.annotation.NonNull Context context) {this(context, null);}
+  public CollectionView(@NonNull Context context) {this(context, null);}
 
   /** {@inheritDoc} */
-  public CollectionView(@androidx.annotation.NonNull Context context, @androidx.annotation.Nullable AttributeSet attr)
+  public CollectionView(@NonNull Context context, @Nullable AttributeSet attr)
   {this(context, attr, DEFAULT_STYLE);}
 
   /** {@inheritDoc} */
   @SuppressWarnings("EmptyTryBlock")
-  public CollectionView(@androidx.annotation.NonNull Context context, @androidx.annotation.Nullable AttributeSet attr, int attrs) {
+  public CollectionView(@NonNull Context context, @Nullable AttributeSet attr, int attrs) {
     super(context, attr, attrs);
     final Resources.Theme theme = context.getTheme();
     final TypedArray attributes = theme.obtainStyledAttributes
@@ -110,7 +110,7 @@ public final class CollectionView extends RecyclerView {
    * @return calculated diffs with a previous set
    */
   @SafeVarargs
-  @androidx.annotation.NonNull
+  @NonNull
   public final <T> RecyclerViewAdapter.Diffs diffs(T... value)
   {return mAdapter.diffs(value);}
 
