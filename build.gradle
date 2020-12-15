@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+import java.util.zip.ZipFile
+
 buildscript {
   repositories {
     google(); jcenter(); mavenCentral()
@@ -161,12 +163,18 @@ subprojects {
   }
   task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    configurations.implementation.setCanBeResolved(true)
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
     excludes += [
         "**/okio/**",
         "**/okhttp3/**",
         "**/com/google/android/gms/tasks/**"
     ]
+    options.author true
+    options.links 'https://developer.android.com/reference/'
+    options.source '8'
+    options.quiet()
+    failOnError false
   }
   task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
@@ -241,4 +249,22 @@ subprojects {
   }
   signing.sign publishing.publications
   tasks.whenTaskAdded { task -> if (task.name == 'assembleRelease') publish.dependsOn task }
+}
+// Utility method to extract only one entry in a zip file
+private def extractEntry(archive, entryPath, outputPath) {
+  if (!archive.exists()) {
+    throw new GradleException("archive $archive not found")
+  }
+
+  def zip = new ZipFile(archive)
+  zip.entries().each {
+    if (it.name == entryPath) {
+      def path = Paths.get(outputPath)
+      if (!Files.exists(path)) {
+        Files.createDirectories(path.getParent())
+        Files.copy(zip.getInputStream(it), path)
+      }
+    }
+  }
+  zip.close()
 }
