@@ -154,7 +154,7 @@ public abstract class RecyclerViewAdapter {
   @SuppressWarnings({ "WeakerAccess", "RedundantSuppression" })
   public interface Diffs {
 
-    /** Accept calculated diffs. */
+    /** @return accept calculated diffs. */
     @NonNull Object[] accept();
 
     /** @return count of accepted items */
