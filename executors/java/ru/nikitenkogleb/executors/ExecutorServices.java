@@ -80,6 +80,10 @@ public final class ExecutorServices {
     return new LooperExecutor(MAIN_LOOPER);
   }
 
+  public static final ExecutorService work() {
+    return new LooperExecutor(WORK_LOOPER);
+  }
+
   public static final ExecutorService io() {
     return createIO(SCHE_FACTORY, false);
   }
