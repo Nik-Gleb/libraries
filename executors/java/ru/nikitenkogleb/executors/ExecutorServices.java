@@ -2,7 +2,7 @@
  * ExecutorServices.java
  * libraries
  *
- * Copyright (C) 2020, Gleb Nikitenko.
+ * Copyright (C) 2021, Gleb Nikitenko.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,6 +75,14 @@ public final class ExecutorServices {
     IMME_EXECUTOR = new ImmediateExecutor(),
     SCHE_EXECUTOR = createIO(SCHE_FACTORY, true),
     ELAS_EXECUTOR = createIO(SCHE_FACTORY, false);
+
+  public static final ExecutorService main() {
+    return new LooperExecutor(MAIN_LOOPER);
+  }
+
+  public static final ExecutorService io() {
+    return createIO(SCHE_FACTORY, false);
+  }
 
   /**
    * @param name the name of thread
