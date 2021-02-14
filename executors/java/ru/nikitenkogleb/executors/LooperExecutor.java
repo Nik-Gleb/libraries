@@ -2,7 +2,7 @@
  * LooperExecutor.java
  * libraries
  *
- * Copyright (C) 2020, Gleb Nikitenko.
+ * Copyright (C) 2021, Gleb Nikitenko.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -156,8 +156,11 @@ final class LooperExecutor
   /** {@inheritDoc} */
   @Override
   public final void shutdown() {
-    if (setTerminated(TERMINATED))
-      mLooper.quitSafely();
+    if (setTerminated(TERMINATED)) {
+      mHandler.removeCallbacksAndMessages(null);
+      if (mLooper != Looper.getMainLooper())
+        mLooper.quitSafely();
+    }
   }
 
   /** {@inheritDoc} */

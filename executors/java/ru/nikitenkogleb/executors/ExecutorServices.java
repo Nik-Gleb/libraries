@@ -64,29 +64,24 @@ public final class ExecutorServices {
     WORK_FACTORY = AndroidThread.factory(WORK_NAME, WORK_THREAD, WORK_PROCESS, false);
 
   /** Looper's. */
-  public static final Looper
+  private static final Looper
     MAIN_LOOPER = setLooperName(Looper.getMainLooper(), MAIN_NAME),
     WORK_LOOPER = setLooperName(newLooper(WORK_FACTORY), WORK_NAME);
 
   /** Executor services. */
   public static final ExecutorService
-    MAIN_EXECUTOR = new LooperExecutor(MAIN_LOOPER),
+    MAIN_EXECUTOR = new LooperExecutor(MAIN_LOOPER)/*,
     WORK_EXECUTOR = new LooperExecutor(WORK_LOOPER),
     IMME_EXECUTOR = new ImmediateExecutor(),
     SCHE_EXECUTOR = createIO(SCHE_FACTORY, true),
-    ELAS_EXECUTOR = createIO(SCHE_FACTORY, false);
+    ELAS_EXECUTOR = createIO(SCHE_FACTORY, false)*/;
 
-  public static final ExecutorService main() {
-    return new LooperExecutor(MAIN_LOOPER);
-  }
 
   public static final ExecutorService work() {
-    return new LooperExecutor(WORK_LOOPER);
+    return new LooperExecutor(setLooperName(newLooper(WORK_FACTORY), WORK_NAME));
   }
 
-  public static final ExecutorService io() {
-    return createIO(SCHE_FACTORY, false);
-  }
+  public static final ExecutorService io() { return createIO(SCHE_FACTORY, false); }
 
   /**
    * @param name the name of thread
