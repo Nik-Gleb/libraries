@@ -69,13 +69,14 @@ public final class ExecutorServices {
     WORK_LOOPER = setLooperName(newLooper(WORK_FACTORY), WORK_NAME);
 
   /** Executor services. */
-  public static final ExecutorService
-    MAIN_EXECUTOR = new LooperExecutor(MAIN_LOOPER)/*,
+  /*public static final ExecutorService
+    MAIN_EXECUTOR = new LooperExecutor(MAIN_LOOPER),
     WORK_EXECUTOR = new LooperExecutor(WORK_LOOPER),
     IMME_EXECUTOR = new ImmediateExecutor(),
     SCHE_EXECUTOR = createIO(SCHE_FACTORY, true),
     ELAS_EXECUTOR = createIO(SCHE_FACTORY, false)*/;
 
+  public static final ExecutorService main() { return new LooperExecutor(MAIN_LOOPER); }
 
   public static final ExecutorService work() {
     return new LooperExecutor(setLooperName(newLooper(WORK_FACTORY), WORK_NAME));
