@@ -24,5 +24,8 @@
  */
 dependencies {
   implementation project.properties['com.google.android.gms_play-services-tasks']
-  implementation project.properties['androidx.annotation_annotation']
+  implementation project.properties['com.squareup.okhttp3_okhttp']
+  implementation project.properties['com.squareup.okio_okio']
+  implementation project.properties['io.projectreactor_reactor-core']
+  implementation project.properties['com.headius_unsafe-mock']
 }

@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+import java.util.zip.ZipFile
+
 buildscript {
   repositories {
     google(); jcenter(); mavenCentral()
@@ -40,9 +42,6 @@ allprojects {
     google(); jcenter(); mavenCentral()
     maven { url 'https://plugins.gradle.org/m2/' }
     maven { url 'https://jitpack.io' }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-    maven { url 'https://oss.sonatype.org/service/local/repositories/releases' }
   }
   tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:deprecation"
@@ -52,12 +51,17 @@ allprojects {
   configurations.all {
     resolutionStrategy {
       force project.properties['androidx.annotation_annotation']
+      force project.properties['androidx.collection_collection']
       force project.properties['androidx.core_core']
       force project.properties['androidx.fragment_fragment']
-      force project.properties['androidx.collection_collection']
+      force project.properties['androidx.appcompat_appcompat']
+      force project.properties['androidx.recyclerview_recyclerview']
       force project.properties['com.google.android.gms_play-services-basement']
       force project.properties['com.google.android.gms_play-services-tasks']
       force project.properties['io.projectreactor_reactor-core']
+      force project.properties['com.squareup.okhttp3_okhttp']
+      force project.properties['com.squareup.okio_okio']
+      force project.properties['com.headius_unsafe-mock']
     }
   }
 }
@@ -79,7 +83,7 @@ subprojects {
     'https://oss.sonatype.org/content/repositories/snapshots'
 
   apply plugin: 'com.android.library'
-  apply plugin: 'com.getkeepsafe.dexcount'
+  //apply plugin: 'com.getkeepsafe.dexcount'
   apply plugin: 'maven-publish'
   apply plugin: 'signing'
   apply plugin: 'io.codearte.nexus-staging'
@@ -158,8 +162,33 @@ subprojects {
     archiveClassifier = 'sources'
   }
   task javadoc(type: Javadoc) {
+    doFirst {
+      configurations.implementation
+          .filter { it.name.endsWith('.aar') }
+          .each { aar ->
+            copy {
+              from zipTree(aar)
+              include "**/classes.jar"
+              into "$buildDir/tmp/aarsToJars/${aar.name.replace('.aar', '')}/"
+            }
+          }
+    }
+
     source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    configurations.implementation.setCanBeResolved(true)
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
+    classpath += fileTree(dir: "$buildDir/tmp/aarsToJars/")
+    excludes += [
+        "**/okio/**",
+        "**/okhttp3/**",
+        "**/com/google/android/gms/tasks/**"
+    ]
+    options.author true
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+    options.links "https://developer.android.com/reference"
+    options.source '8'
+    options.verbose()
+    failOnError true
   }
   task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
@@ -173,7 +202,6 @@ subprojects {
       artifact "$buildDir/intermediates/aar_main_jar/release/classes.jar"
       artifact sourcesJar
       artifact javadocJar
-
 
       final File file = new File(project.name, "README.md")
       final Scanner scanner = new Scanner(new FileInputStream(file))
