@@ -64,7 +64,7 @@ public final class ExecutorServices {
     WORK_FACTORY = AndroidThread.factory(WORK_NAME, WORK_THREAD, WORK_PROCESS, false);
 
   /** Looper's. */
-  private static final Looper
+  public static final Looper
     MAIN_LOOPER = setLooperName(Looper.getMainLooper(), MAIN_NAME),
     WORK_LOOPER = setLooperName(newLooper(WORK_FACTORY), WORK_NAME);
 
